@@ -1,0 +1,22 @@
+{
+  // "files": [],
+  // "references": [
+  //   { "path": "./tsconfig.app.json" },
+  //   { "path": "./tsconfig.node.json" }
+  // ],
+  "compilerOptions": {
+
+    "jsx": "react-jsx", // or "react" for older versions of React
+    "resolveJsonModule": true, // To import .json files
+    "esModuleInterop": true, // To handle default imports correctly
+    "module": "commonjs", // Common module system for Node
+    "target": "esnext", // Set your desired target version
+    "moduleResolution": "node", // For resolving modules like Node.js
+    "strict": true, // Enables strict type-checking options
+    "skipLibCheck": true // Skip type-checking of declaration files
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ]
+}
