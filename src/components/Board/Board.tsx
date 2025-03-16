@@ -1,16 +1,10 @@
-import { useState } from "react";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import InputGroup from "react-bootstrap/InputGroup";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../redux/store";
 import { IssueOptions, setIssues } from "../../redux/issuesSlice";
-import { fetchIssues } from "../../redux/createAsyncThunkFuncs";
 import Column from "../Column/Column";
 import { ColumnKey } from "../../redux/issuesSlice";
 import { database } from "../../firebase";
 import { doc, setDoc } from "firebase/firestore";
-import Nav from "react-bootstrap/Nav";
 import {
   DndContext,
   DragEndEvent,
@@ -26,11 +20,11 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { NavItem } from "react-bootstrap";
 import { getUpdatedIssuesMap, getReorderedCards } from "./helpers";
+import RepoNav from "../RepoNav/RepoNav";
+import { useCallback } from "react";
 
 const Board = () => {
-  const [repoUrl, setRepo] = useState<string>("");
   const { issues, currentRepo } = useSelector(
     (state: RootState) => state.issues,
   );
@@ -42,7 +36,7 @@ const Board = () => {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
-  const handleDragMove = (event: DragMoveEvent) => {
+  const handleDragMove = useCallback((event: DragMoveEvent) => {
     const { active, over } = event;
 
     if (!over?.id) return;
@@ -67,9 +61,9 @@ const Board = () => {
         }),
       );
     }
-  };
+  }, [dispatch, issues]);
 
-  const handleDragEnd = async (event: DragEndEvent) => {
+  const handleDragEnd = useCallback(async (event: DragEndEvent) => {
     if (!event.over?.id) return;
 
     const [owner, repository] = currentRepo.split("/");
@@ -85,7 +79,7 @@ const Board = () => {
     });
 
     await setDoc(repoDocRef, { issues: updatedIssuesMap }, { merge: true });
-  };
+  }, [currentRepo, issues]);
 
   return (
     <DndContext
@@ -95,48 +89,7 @@ const Board = () => {
       onDragEnd={handleDragEnd}
     >
       <div>
-        <InputGroup className="mb-3">
-          <Form.Control
-            placeholder="Enter repo URL"
-            aria-label="Enter repo URL"
-            aria-describedby="basic-addon2"
-            value={repoUrl}
-            onChange={({
-              target: { value },
-            }: React.ChangeEvent<HTMLInputElement>) => setRepo(value)}
-          />
-          <Button
-            onClick={async () => dispatch(fetchIssues(repoUrl))}
-            variant="outline-secondary"
-            id="button-addon2"
-          >
-            Load issues
-          </Button>
-        </InputGroup>
-        <Nav className="mb-3">
-          {currentRepo && (
-            <>
-              <NavItem>
-                <Nav.Link
-                  href={`https://github.com/${currentRepo.split("/")[0]}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Visit Owner Profile
-                </Nav.Link>
-              </NavItem>
-              <NavItem>
-                <Nav.Link
-                  href={`https://github.com/${currentRepo}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Visit Repository
-                </Nav.Link>
-              </NavItem>
-            </>
-          )}
-        </Nav>
+        <RepoNav />
         {Object.values(issues).every((arr) => arr.length === 0) ? (
           <p>Nothing found</p>
         ) : (
