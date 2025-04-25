@@ -4,8 +4,6 @@ import Board from "./components/Board/Board";
 import CustomInput from "./components/CustomInput/CustomInput";
 
 function App() {
-  console.log('hello');
-  
   return (
     <div>
       <CustomInput />
