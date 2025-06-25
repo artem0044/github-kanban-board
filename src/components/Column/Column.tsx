@@ -23,6 +23,9 @@ const Column: React.FC<Props> = ({ columnKey, issues }) => {
     },
   });
 
+  let a = 'abc';
+  a = 'ewr';
+
   return (
     <div>
       <h2>{columnTitles[columnKey]}</h2>
